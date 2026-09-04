@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
-import { RootStackParamList } from "../navigation/Types";
+import { RootStackParamList } from "../navigation/types";
 
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
