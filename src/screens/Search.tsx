@@ -5,20 +5,21 @@ import React, { useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import ArticleCard from "../components/ArticleCard";
 import CustomInput from "../components/CustomInput";
-import { RootStackParamList } from "../navigation/Types";
-
-
-// Datos de ejemplo — se reemplazan luego con el contenido real del área civil
-const ARTICULOS_PLACEHOLDER = [
-  { id: "1", articulo: "Art. 12", ley: "Código Civil", resumen: "Resumen de ejemplo pendiente de reemplazar con contenido real." },
-  { id: "2", articulo: "Art. 45", ley: "Código Civil", resumen: "Resumen de ejemplo pendiente de reemplazar con contenido real." },
-];
+import { ARTICULOS } from "../data/articulos";
+import { RootStackParamList } from "../navigation/types";
 
 type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function Search() {
   const [query, setQuery] = useState("");
   const navigation = useNavigation<NavProp>();
+
+  const filteredArticles = ARTICULOS.filter(
+    (item) =>
+      item.articulo.toLowerCase().includes(query.toLowerCase()) ||
+      item.resumen.toLowerCase().includes(query.toLowerCase()) ||
+      item.categoria.toLowerCase().includes(query.toLowerCase())
+  );
 
   return (
     <View style={styles.container}>
@@ -29,14 +30,16 @@ export default function Search() {
         type="default"
       />
       <FlatList
-        data={ARTICULOS_PLACEHOLDER}
+        data={filteredArticles}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <ArticleCard
             articulo={item.articulo}
             ley={item.ley}
             resumen={item.resumen}
-            onPress={() => navigation.navigate("ArticleDetail", { articleId: item.id })}
+            onPress={() =>
+              navigation.navigate("ArticleDetail", { articleId: item.id })
+            }
           />
         )}
       />
