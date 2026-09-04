@@ -22,7 +22,7 @@ export default function Login({ navigation }: Props) {
     <View style={styles.container}>
       {/* Imagen local: requisito de "al menos una imagen local" */}
       <Image
-        source={require("../../assets/icon.png")}
+        source={require("../../assets/images/icon.png")}
         style={styles.logo}
         resizeMode="contain"
       />
