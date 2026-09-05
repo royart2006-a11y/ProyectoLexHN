@@ -1,12 +1,11 @@
-// src/components/ArticleCard.tsx
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type ArticleCardProps = {
-  articulo: string;
-  ley: string;
-  resumen: string;
-  onPress: () => void;
+  articulo: string;   // ej. "Art. 46"
+  ley: string;        // ej. "Código Civil"
+  resumen: string;    // texto corto para la vista de lista
+  onPress: () => void; // qué pasa al tocar la tarjeta (navegar al detalle)
 };
 
 export default function ArticleCard({ articulo, ley, resumen, onPress }: ArticleCardProps) {
@@ -16,9 +15,8 @@ export default function ArticleCard({ articulo, ley, resumen, onPress }: Article
         <Text style={styles.articulo}>{articulo}</Text>
         <Text style={styles.ley}>{ley}</Text>
       </View>
-      <Text style={styles.resumen} numberOfLines={2}>
-        {resumen}
-      </Text>
+      {/* numberOfLines corta el texto con "..." si es muy largo, para no romper el diseño de la tarjeta */}
+      <Text style={styles.resumen} numberOfLines={2}>{resumen}</Text>
     </TouchableOpacity>
   );
 }
@@ -31,34 +29,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 14,
     marginBottom: 10,
-    // Sombra ligera para que la tarjeta "flote" un poco sobre el fondo
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
   },
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-between", // artículo a la izquierda, ley (badge) a la derecha
     alignItems: "center",
     marginBottom: 6,
   },
-  articulo: {
-    fontWeight: "bold",
-    fontSize: 15,
-    color: "#206291",
-  },
+  articulo: { fontWeight: "bold", fontSize: 15, color: "#206291" },
   ley: {
-    fontSize: 12,
-    color: "gray",
-    backgroundColor: "#e8f0f7",
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
+    fontSize: 12, color: "gray", backgroundColor: "#e8f0f7",
+    paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6,
   },
-  resumen: {
-    fontSize: 13,
-    color: "#333",
-  },
+  resumen: { fontSize: 13, color: "#333" },
 });

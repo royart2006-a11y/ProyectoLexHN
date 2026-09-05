@@ -1,16 +1,15 @@
 // src/data/articulos.ts
 
 export type Articulo = {
-  id: string;
-  articulo: string;
-  ley: string;
-  categoria: string;
-  resumen: string;
-  resumenCompleto: string;
+  id: string;              // identificador único, usado para navegar (ArticleDetail busca por esto)
+  articulo: string;        // "Art. 46" — se muestra en la tarjeta y el detalle
+  ley: string;             // "Código Civil" — de qué ley proviene
+  categoria: string;       // usado para el filtro de categorías en Search
+  resumen: string;         // versión corta / simplificada
+  resumenCompleto: string; // texto legal íntegro
 };
 
 export const ARTICULOS: Articulo[] = [
-  // 1. Nacionalidad y condición de extranjero
   {
     id: "46",
     articulo: "Art. 46",
@@ -19,6 +18,7 @@ export const ARTICULOS: Articulo[] = [
     resumen: "Determina quiénes son hondureños y quiénes son extranjeros.",
     resumenCompleto: "Son hondureños los que declara tales la Constitución del Estado. Los demás son extranjeros.",
   },
+  // ... resto de los 65 artículos, mismo patrón
   {
     id: "47",
     articulo: "Art. 47",

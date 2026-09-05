@@ -1,4 +1,3 @@
-// src/screens/Profile.tsx
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React from "react";
@@ -13,7 +12,9 @@ export default function Profile() {
   const navigation = useNavigation<NavProp>();
 
   const handleLogout = () => {
-    // Regresa al Login y elimina Tabs del historial de navegación
+    // reset() limpia TODO el historial de navegación y deja solo "Login".
+    // Sin esto, el usuario podría presionar "atrás" después de cerrar sesión
+    // y volver a ver las Tabs como si nada.
     navigation.reset({
       index: 0,
       routes: [{ name: "Login" }],
@@ -22,11 +23,7 @@ export default function Profile() {
 
   return (
     <View style={styles.container}>
-      <Image
-       source={require("../../assets/images/temis.png")}
-        style={styles.avatar}
-        resizeMode="contain"
-      />
+      <Image source={require("../../assets/images/temis.png")} style={styles.avatar} resizeMode="contain" />
       <Text style={styles.name}>Usuario de LexHN</Text>
       <Text style={styles.email}>usuario@ejemplo.com</Text>
 
@@ -38,28 +35,9 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-  },
-  avatar: {
-    width: 90,
-    height: 90,
-    marginBottom: 12,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  email: {
-    fontSize: 13,
-    color: "gray",
-    marginBottom: 10,
-  },
-  spacer: {
-    height: 30,
-  },
+  container: { flex: 1, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", padding: 20 },
+  avatar: { width: 90, height: 90, marginBottom: 12 },
+  name: { fontSize: 18, fontWeight: "bold" },
+  email: { fontSize: 13, color: "gray", marginBottom: 10 },
+  spacer: { height: 30 },
 });
