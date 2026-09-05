@@ -23,7 +23,7 @@ export default function Profile() {
   return (
     <View style={styles.container}>
       <Image
-        source={require("../../assets/images/icon.png")}
+       source={require("../../assets/images/temis.png")}
         style={styles.avatar}
         resizeMode="contain"
       />

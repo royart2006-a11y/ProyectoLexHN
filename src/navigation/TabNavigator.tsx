@@ -5,7 +5,7 @@ import React from "react";
 import Favorites from "../screens/Favorites";
 import Profile from "../screens/Profile";
 import Search from "../screens/Search";
-import { TabsParamList } from "./Types";
+import { TabsParamList } from "./types";
 
 
 const Tab = createBottomTabNavigator<TabsParamList>();

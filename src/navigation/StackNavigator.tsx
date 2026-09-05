@@ -4,7 +4,8 @@ import React from "react";
 import ArticleDetail from "../screens/ArticleDetail";
 import Login from "../screens/Login";
 import TabNavigator from "./TabNavigator";
-import { RootStackParamList } from "./Types";
+import { RootStackParamList } from "./types";
+
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

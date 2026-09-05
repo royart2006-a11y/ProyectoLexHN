@@ -14,15 +14,13 @@ export default function Login({ navigation }: Props) {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    // Por ahora, sin backend: si pasa validación básica, navega directo
     navigation.replace("Tabs");
   };
 
   return (
     <View style={styles.container}>
-      {/* Imagen local: requisito de "al menos una imagen local" */}
       <Image
-        source={require("../../assets/images/icon.png")}
+        source={require("../../assets/images/temis.png")}
         style={styles.logo}
         resizeMode="contain"
       />
@@ -55,12 +53,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   logo: {
-    width: 90,
-    height: 90,
+    width: 160,
+    height: 160,
     marginBottom: 12,
   },
   title: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: "bold",
     color: "#206291",
   },
@@ -68,5 +66,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "gray",
     marginBottom: 24,
+    textAlign: "center",
   },
 });
