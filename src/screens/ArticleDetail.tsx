@@ -1,19 +1,21 @@
 // src/screens/ArticleDetail.tsx
+import { Ionicons } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useFavorites } from "../context/FavoritesContext";
 import { ARTICULOS } from "../data/articulos";
 import { RootStackParamList } from "../navigation/types";
+
 
 type Props = NativeStackScreenProps<RootStackParamList, "ArticleDetail">;
 
 export default function ArticleDetail({ route }: Props) {
   const { articleId } = route.params;
+  const { esFavorito, toggleFavorito } = useFavorites();
 
-  // Busca el artículo correspondiente en la fuente de datos compartida
   const articulo = ARTICULOS.find((item) => item.id === articleId);
 
-  // Comportamiento condicionado: si por alguna razón el ID no existe, mostramos un aviso
   if (!articulo) {
     return (
       <View style={styles.container}>
@@ -22,13 +24,22 @@ export default function ArticleDetail({ route }: Props) {
     );
   }
 
+  const marcado = esFavorito(articulo.id);
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.articuloTitle}>{articulo.articulo}</Text>
-        <Text style={styles.leyBadge}>{articulo.ley}</Text>
+        <TouchableOpacity onPress={() => toggleFavorito(articulo.id)}>
+          <Ionicons
+            name={marcado ? "heart" : "heart-outline"}
+            size={26}
+            color={marcado ? "#e74c3c" : "gray"}
+          />
+        </TouchableOpacity>
       </View>
 
+      <Text style={styles.leyBadge}>{articulo.ley}</Text>
       <Text style={styles.categoriaLabel}>Categoría: {articulo.categoria}</Text>
 
       <Text style={styles.sectionTitle}>Explicación</Text>
@@ -58,9 +69,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "gray",
     backgroundColor: "#e8f0f7",
+    alignSelf: "flex-start",
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,
+    marginBottom: 6,
   },
   categoriaLabel: {
     fontSize: 13,
