@@ -2,10 +2,10 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
+import CategoryChip from "../components/CategoryChip";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
-
-import { useAuth } from "../context/AuthContext";
+import { TipoUsuario, useAuth } from "../context/AuthContext";
 import { RootStackParamList } from "../navigation/types";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Register">;
@@ -13,6 +13,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "Register">;
 export default function Register({ navigation }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [tipoUsuario, setTipoUsuario] = useState<TipoUsuario>("usuario");
   const [registerError, setRegisterError] = useState<string | null>(null);
   const { registrarUsuario } = useAuth();
 
@@ -26,15 +27,13 @@ export default function Register({ navigation }: Props) {
       return;
     }
 
-    const exito = registrarUsuario(email, password);
+    const exito = registrarUsuario(email, password, tipoUsuario);
 
     if (!exito) {
       setRegisterError("Ese correo ya está registrado.");
       return;
     }
 
-    // Registro exitoso: inicia sesión automáticamente y navega directo a Tabs,
-    // reemplazando el historial para que no pueda "volver" a Login o Register.
     setRegisterError(null);
     navigation.reset({
       index: 0,
@@ -64,6 +63,21 @@ export default function Register({ navigation }: Props) {
         type="password"
       />
 
+      {/* Selector de perfil: cómo prefiere leer el contenido legal */}
+      <Text style={styles.roleLabel}>¿Cómo describirías tu perfil?</Text>
+      <View style={styles.roleRow}>
+        <CategoryChip
+          label="Usuario común"
+          selected={tipoUsuario === "usuario"}
+          onPress={() => setTipoUsuario("usuario")}
+        />
+        <CategoryChip
+          label="Persona de derecho"
+          selected={tipoUsuario === "abogado"}
+          onPress={() => setTipoUsuario("abogado")}
+        />
+      </View>
+
       {registerError && <Text style={styles.errorText}>{registerError}</Text>}
 
       <CustomButton title="Registrarse" onPress={handleRegister} />
@@ -85,15 +99,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   logo: {
-    width: 130,
-    height: 130,
-    marginBottom: 12,
+    width: 110,
+    height: 110,
+    marginBottom: 8,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     color: "#206291",
-    marginBottom: 20,
+    marginBottom: 16,
+  },
+  roleLabel: {
+    fontSize: 13,
+    color: "gray",
+    alignSelf: "flex-start",
+    marginTop: 6,
+    marginBottom: 8,
+  },
+  roleRow: {
+    flexDirection: "row",
+    marginBottom: 14,
   },
   errorText: {
     color: "red",

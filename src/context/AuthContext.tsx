@@ -1,38 +1,51 @@
 // src/context/AuthContext.tsx
 import React, { createContext, ReactNode, useContext, useState } from "react";
 
+export type TipoUsuario = "abogado" | "usuario";
+
 type Usuario = {
   email: string;
   password: string;
+  tipoUsuario: TipoUsuario;
 };
 
 type AuthContextType = {
-  usuarios: Usuario[];
-  registrarUsuario: (email: string, password: string) => boolean;
+  usuarioActual: Usuario | null;
+  registrarUsuario: (email: string, password: string, tipoUsuario: TipoUsuario) => boolean;
   validarLogin: (email: string, password: string) => boolean;
+  cerrarSesion: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [usuarioActual, setUsuarioActual] = useState<Usuario | null>(null);
 
-  // Registra un nuevo usuario. Devuelve false si el correo ya existe.
-  const registrarUsuario = (email: string, password: string): boolean => {
+  const registrarUsuario = (email: string, password: string, tipoUsuario: TipoUsuario): boolean => {
     const yaExiste = usuarios.some((u) => u.email === email);
     if (yaExiste) return false;
 
-    setUsuarios((prev) => [...prev, { email, password }]);
+    const nuevoUsuario = { email, password, tipoUsuario };
+    setUsuarios((prev) => [...prev, nuevoUsuario]);
+    setUsuarioActual(nuevoUsuario); // inicia sesión automáticamente con este usuario
     return true;
   };
 
-  // Valida que exista un usuario con ese email Y esa contraseña exacta.
   const validarLogin = (email: string, password: string): boolean => {
-    return usuarios.some((u) => u.email === email && u.password === password);
+    const encontrado = usuarios.find((u) => u.email === email && u.password === password);
+    if (!encontrado) return false;
+
+    setUsuarioActual(encontrado);
+    return true;
+  };
+
+  const cerrarSesion = () => {
+    setUsuarioActual(null);
   };
 
   return (
-    <AuthContext.Provider value={{ usuarios, registrarUsuario, validarLogin }}>
+    <AuthContext.Provider value={{ usuarioActual, registrarUsuario, validarLogin, cerrarSesion }}>
       {children}
     </AuthContext.Provider>
   );
