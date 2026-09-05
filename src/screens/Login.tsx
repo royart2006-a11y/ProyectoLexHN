@@ -4,16 +4,27 @@ import React, { useState } from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
-import { RootStackParamList } from "../navigation/types";
 
+import { useAuth } from "../context/AuthContext";
+import { RootStackParamList } from "../navigation/types";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
 export default function Login({ navigation }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const { validarLogin } = useAuth();
 
   const handleLogin = () => {
+    const esValido = validarLogin(email, password);
+
+    if (!esValido) {
+      setLoginError("Correo o contraseña incorrectos.");
+      return;
+    }
+
+    setLoginError(null);
     navigation.replace("Tabs");
   };
 
@@ -39,7 +50,17 @@ export default function Login({ navigation }: Props) {
         placeholder="Ingresa tu contraseña"
         type="password"
       />
+
+      {/* Mensaje de error de credenciales, separado del error de formato de CustomInput */}
+      {loginError && <Text style={styles.loginErrorText}>{loginError}</Text>}
+
       <CustomButton title="Iniciar Sesión" onPress={handleLogin} />
+
+      <CustomButton
+        title="Crear cuenta"
+        variant="tertiary"
+        onPress={() => navigation.navigate("Register")}
+      />
     </View>
   );
 }
@@ -66,6 +87,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "gray",
     marginBottom: 24,
+    textAlign: "center",
+  },
+  loginErrorText: {
+    color: "red",
+    fontSize: 13,
+    marginBottom: 10,
     textAlign: "center",
   },
 });
