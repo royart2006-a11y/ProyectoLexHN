@@ -1,38 +1,36 @@
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleProp, StyleSheet, Text, TouchableOpacity, ViewStyle } from "react-native";
 
 type CustomButtonProps = {
   title: string;
   onPress: () => void;
   variant?: "primary" | "secondary" | "tertiary";
+  style?: StyleProp<ViewStyle>; // permite ajustar tamaño/posición sin tocar el estilo base
 };
 
-export default function CustomButton({ title, onPress, variant = "primary" }: CustomButtonProps) {
-  // getStyles genera un objeto de estilos DISTINTO según el variant recibido.
-  // Se recalcula en cada render, así que si el variant cambia, el botón se repinta.
+export default function CustomButton({ title, onPress, variant = "primary", style }: CustomButtonProps) {
   const styles = getStyles(variant);
 
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
+    <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
       <Text style={styles.buttonTitle}>{title}</Text>
     </TouchableOpacity>
   );
 }
 
-// Función separada (no un hook) porque no necesita estado ni ciclo de vida,
-// solo transforma un input (variant) en un output (estilos) de forma pura.
 const getStyles = (variant: "primary" | "secondary" | "tertiary") =>
   StyleSheet.create({
     button: {
       backgroundColor:
-        variant === "primary" ? "#206291" : variant === "secondary" ? "#c5def0" : "#fff",
-      borderRadius: 5,
+        variant === "primary" ? "#0B2545" : variant === "secondary" ? "#D9C9A3" : "transparent",
+      borderRadius: 6,
       width: 150,
       padding: 12,
       marginBottom: 5,
       alignItems: "center",
     },
     buttonTitle: {
-      color: variant === "primary" ? "white" : "black",
+      color: variant === "primary" ? "#F4EFE6" : variant === "secondary" ? "#0B2545" : "#0B2545",
+      fontWeight: variant === "tertiary" ? "600" : "bold",
     },
   });

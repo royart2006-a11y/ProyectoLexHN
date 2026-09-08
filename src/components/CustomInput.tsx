@@ -1,31 +1,33 @@
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import React, { useState } from "react";
-import { KeyboardTypeOptions, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { KeyboardTypeOptions, StyleProp, StyleSheet, Text, TextInput, TouchableOpacity, View, ViewStyle } from "react-native";
 
 type CustomInputProps = {
-  onChangeText: (text: string) => void; // función que el PADRE controla; nosotros solo la disparamos
-  value: string;                         // el texto actual viene del padre (input controlado)
+  onChangeText: (text: string) => void;
+  value: string;
   placeholder: string;
   type?: "default" | "password" | "email" | "number";
+  containerStyle?: StyleProp<ViewStyle>; // permite personalizar el look en pantallas específicas, sin afectar el resto
 };
 
-export default function CustomInput({ onChangeText, value, placeholder, type = "default" }: CustomInputProps) {
-  // Estado LOCAL: solo le importa a este componente, no al padre.
-  // Empieza oculto si el input es de tipo password.
+export default function CustomInput({
+  onChangeText,
+  value,
+  placeholder,
+  type = "default",
+  containerStyle,
+}: CustomInputProps) {
   const [isSecureText, setIsSecureText] = useState(type === "password");
   const isPasswordField = type === "password";
 
-  // Ícono condicionado por tipo: patrón de "if/else" con operadores ternarios encadenados
   const iconName: (typeof MaterialIcons)["name"] | undefined =
     type === "password" ? "lock" : type === "email" ? "alternate-email" : undefined;
 
-  // Teclado condicionado: el celular muestra un teclado distinto según el tipo de dato esperado
   const keyboardType: KeyboardTypeOptions =
     type === "email" ? "email-address" : type === "number" ? "number-pad" : "default";
 
-  // Función de validación: se recalcula en cada render, reaccionando al 'value' actual
   const getError = () => {
-    if (!value) return null; // no mostramos error mientras el campo está vacío (mejor UX)
+    if (!value) return null;
     if (type === "email" && !value.includes("@")) return "Correo inválido";
     if (type === "password" && value.length < 4) return "La contraseña es débil";
     return null;
@@ -35,26 +37,24 @@ export default function CustomInput({ onChangeText, value, placeholder, type = "
 
   return (
     <View style={styles.wrapper}>
-      {/* El array de estilos aplica inputError SOLO si error es verdadero (comportamiento condicionado) */}
-      <View style={[styles.inputContainer, error && styles.inputError]}>
-        {iconName && <MaterialIcons name={iconName as any} size={22} />}
+      <View style={[styles.inputContainer, containerStyle, error && styles.inputError]}>
+        {iconName && <MaterialIcons name={iconName as any} size={22} color="#5C6B7A" />}
         <TextInput
           style={styles.input}
           onChangeText={onChangeText}
           value={value}
           placeholder={placeholder}
+          placeholderTextColor="#8A97A5"
           keyboardType={keyboardType}
           secureTextEntry={isSecureText}
           autoCapitalize={type === "email" ? "none" : "sentences"}
         />
         {isPasswordField && (
           <TouchableOpacity onPress={() => setIsSecureText(!isSecureText)}>
-            {/* El ícono del ojo cambia según si el texto está oculto o visible */}
-            <Ionicons name={isSecureText ? "eye" : "eye-off"} size={22} />
+            <Ionicons name={isSecureText ? "eye" : "eye-off"} size={22} color="#5C6B7A" />
           </TouchableOpacity>
         )}
       </View>
-      {/* El mensaje de error solo se renderiza si existe (&& es un if corto en JSX) */}
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
@@ -64,8 +64,8 @@ const styles = StyleSheet.create({
   wrapper: { marginBottom: 10 },
   inputContainer: {
     backgroundColor: "lightgray",
-    flexDirection: "row",        // ícono + input + ícono de ojo en fila horizontal
-    alignItems: "center",         // centrados verticalmente entre sí
+    flexDirection: "row",
+    alignItems: "center",
     justifyContent: "space-between",
     borderRadius: 9,
     borderColor: "gray",
@@ -74,6 +74,6 @@ const styles = StyleSheet.create({
     paddingRight: 20,
   },
   input: { width: "70%" },
-  inputError: { borderColor: "red", borderWidth: 2 }, // se combina con inputContainer cuando hay error
-  errorText: { color: "red", fontSize: 13, marginTop: 5, marginLeft: 7 },
+  inputError: { borderColor: "#B03A2E", borderWidth: 2 },
+  errorText: { color: "#B03A2E", fontSize: 13, marginTop: 5, marginLeft: 7 },
 });

@@ -1,27 +1,18 @@
 // src/screens/Login.tsx
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import React, { useState } from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Platform, StyleSheet, Text, View } from "react-native";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
-
 import { useAuth } from "../context/AuthContext";
 import { RootStackParamList } from "../navigation/types";
 
-// NativeStackScreenProps le da a esta pantalla acceso tipado a 'navigation' y 'route',
-// sabiendo específicamente que esta es la pantalla "Login" del RootStackParamList.
 type Props = NativeStackScreenProps<RootStackParamList, "Login">;
 
 export default function Login({ navigation }: Props) {
-  // Estado LOCAL de esta pantalla: lo que el usuario va escribiendo, antes de enviarlo.
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  // Error específico de "credenciales incorrectas" — distinto del error de FORMATO
-  // que ya maneja CustomInput internamente (ej. "correo inválido").
   const [loginError, setLoginError] = useState<string | null>(null);
-
-  // Traemos la función de validación desde el contexto global de autenticación.
   const { validarLogin } = useAuth();
 
   const handleLogin = () => {
@@ -29,12 +20,10 @@ export default function Login({ navigation }: Props) {
 
     if (!esValido) {
       setLoginError("Correo o contraseña incorrectos.");
-      return; // cortamos aquí: no navegamos si las credenciales fallan
+      return;
     }
 
     setLoginError(null);
-    // replace() en vez de navigate(): reemplaza Login en la pila de navegación,
-    // así el usuario no puede volver a Login con el botón atrás una vez adentro.
     navigation.replace("Tabs");
   };
 
@@ -48,22 +37,100 @@ export default function Login({ navigation }: Props) {
       <Text style={styles.title}>LexHN</Text>
       <Text style={styles.subtitle}>Consulta legal simplificada</Text>
 
-      <CustomInput onChangeText={setEmail} value={email} placeholder="Ingresa tu correo" type="email" />
-      <CustomInput onChangeText={setPassword} value={password} placeholder="Ingresa tu contraseña" type="password" />
+      <View style={styles.divider} />
 
-      {/* Solo se muestra si loginError tiene contenido (no es null) */}
+      <CustomInput
+        onChangeText={setEmail}
+        value={email}
+        placeholder="Correo electrónico"
+        type="email"
+        containerStyle={styles.inputContainer}
+      />
+      <CustomInput
+        onChangeText={setPassword}
+        value={password}
+        placeholder="Contraseña"
+        type="password"
+        containerStyle={styles.inputContainer}
+      />
+
       {loginError && <Text style={styles.loginErrorText}>{loginError}</Text>}
 
-      <CustomButton title="Iniciar Sesión" onPress={handleLogin} />
-      <CustomButton title="Crear cuenta" variant="tertiary" onPress={() => navigation.navigate("Register")} />
+      <CustomButton title="Iniciar Sesión" onPress={handleLogin} style={styles.mainButton} />
+      <CustomButton
+        title="Crear cuenta"
+        variant="tertiary"
+        onPress={() => navigation.navigate("Register")}
+        style={styles.tertiaryButton}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", paddingHorizontal: 24 },
-  logo: { width: 160, height: 160, marginBottom: 12 },
-  title: { fontSize: 28, fontWeight: "bold", color: "#206291" },
-  subtitle: { fontSize: 14, color: "gray", marginBottom: 24, textAlign: "center" },
-  loginErrorText: { color: "red", fontSize: 13, marginBottom: 10, textAlign: "center" },
+  container: {
+    flex: 1,
+    backgroundColor: "#F4EFE6", // tono marfil/pergamino, evoca papel legal antiguo
+    alignItems: "center",
+    justifyContent: "flex-start",
+    paddingHorizontal: 28,
+    paddingTop: 60, // sube todo el contenido, como pediste
+  },
+  logo: {
+    width: 150,
+    height: 150,
+    marginBottom: 8,
+  },
+  title: {
+    fontSize: 34,
+    fontWeight: "bold",
+    color: "#0B2545", // azul marino profundo, tipo toga/uniforme judicial
+    fontFamily: Platform.OS === "ios" ? "Georgia" : "serif", // tipografía con serifas, más solemne
+    letterSpacing: 1,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: "#5C6B7A",
+    marginTop: 2,
+    marginBottom: 18,
+    textAlign: "center",
+    fontStyle: "italic",
+  },
+  divider: {
+    width: 60,
+    height: 3,
+    backgroundColor: "#D9C9A3", // línea dorada decorativa, como un sello o listón
+    borderRadius: 2,
+    marginBottom: 24,
+  },
+  inputContainer: {
+    backgroundColor: "#FFFFFF",
+    borderColor: "#C9C2B4",
+    borderWidth: 1.5,
+    borderRadius: 14,
+    paddingVertical: 16, // inputs más altos/largos, como pediste
+    paddingHorizontal: 22,
+    width: "100%",
+    shadowColor: "#0B2545",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  loginErrorText: {
+    color: "#B03A2E",
+    fontSize: 13,
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  mainButton: {
+    width: "100%",
+    paddingVertical: 16,
+    borderRadius: 12,
+    marginTop: 10,
+  },
+  tertiaryButton: {
+    width: "100%",
+    marginTop: 4,
+  },
 });

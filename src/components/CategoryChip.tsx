@@ -15,12 +15,27 @@ export default function CategoryChip({ label, selected, onPress }: CategoryChipP
   );
 }
 
+// src/components/CategoryChip.tsx
 const styles = StyleSheet.create({
   chip: {
-    backgroundColor: "#f0f0f0", borderRadius: 20, paddingHorizontal: 14,
-    paddingVertical: 8, marginRight: 8, borderWidth: 1, borderColor: "#e0e0e0",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    marginRight: 8,
+    borderWidth: 1.5,
+    borderColor: "#C9C2B4",
   },
-  chipSelected: { backgroundColor: "#206291", borderColor: "#206291" },
-  label: { fontSize: 13, color: "#333" },
-  labelSelected: { color: "#fff", fontWeight: "bold" },
+  chipSelected: {
+    backgroundColor: "#0B2545",
+    borderColor: "#0B2545",
+  },
+  label: {
+    fontSize: 13,
+    color: "#5C6B7A",
+  },
+  labelSelected: {
+    color: "#F4EFE6",
+    fontWeight: "bold",
+  },
 });
