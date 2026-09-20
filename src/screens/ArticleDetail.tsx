@@ -13,7 +13,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "ArticleDetail">;
 export default function ArticleDetail({ route }: Props) {
   const { articleId } = route.params;
   const { esFavorito, toggleFavorito } = useFavorites();
-  const { usuarioActual } = useAuth();
+  const { user } = useAuth();
 
   const articulo = ARTICULOS.find((item) => item.id === articleId);
 
@@ -26,7 +26,7 @@ export default function ArticleDetail({ route }: Props) {
   }
 
   const marcado = esFavorito(articulo.id);
-  const esAbogado = usuarioActual?.tipoUsuario === "abogado";
+  const esAbogado = user?.role === "abogado";
 
   return (
     <ScrollView style={styles.container}>

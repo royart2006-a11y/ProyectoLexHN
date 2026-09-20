@@ -1,7 +1,7 @@
 // src/screens/Profile.tsx
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import React from "react";
+import React, { useState } from "react";
 import { Image, Platform, StyleSheet, Text, View } from "react-native";
 import CustomButton from "../components/CustomButton";
 
@@ -12,14 +12,24 @@ type NavProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function Profile() {
   const navigation = useNavigation<NavProp>();
-  const { usuarioActual, cerrarSesion } = useAuth();
+  const { user, logout } = useAuth();
+  const [loading, setLoading] = useState(false);
 
-  const handleLogout = () => {
-    cerrarSesion(); // limpia usuarioActual en el contexto
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Login" }],
-    });
+  const handleLogout = async () => {
+    if (loading) return; // evita doble toque
+    setLoading(true);
+
+    try {
+      await logout(); // cierra la sesión en Supabase y limpia user en el contexto
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Login" }],
+      });
+    } catch (err: any) {
+      console.log("Error al cerrar sesión:", err?.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -30,13 +40,18 @@ export default function Profile() {
         resizeMode="contain"
       />
       <Text style={styles.name}>
-        {usuarioActual?.tipoUsuario === "abogado" ? "Persona de derecho" : "Usuario de LexHN"}
+        {user?.role === "abogado" ? "Persona de derecho" : "Usuario de LexHN"}
       </Text>
-      <Text style={styles.email}>{usuarioActual?.email ?? "Sin sesión"}</Text>
+      <Text style={styles.email}>{user?.email || "Sin sesión"}</Text>
 
       <View style={styles.divider} />
 
-      <CustomButton title="Cerrar sesión" onPress={handleLogout} variant="secondary" style={styles.logoutButton} />
+      <CustomButton
+        title={loading ? "Cerrando..." : "Cerrar sesión"}
+        onPress={handleLogout}
+        variant="secondary"
+        style={styles.logoutButton}
+      />
     </View>
   );
 }
