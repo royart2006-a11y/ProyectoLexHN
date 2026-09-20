@@ -13,18 +13,35 @@ export default function Login({ navigation }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
-  const { validarLogin } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
 
-  const handleLogin = () => {
-    const esValido = validarLogin(email, password);
+  const handleLogin = async () => {
+    if (loading) return; // evita doble toque mientras se espera a Supabase
 
-    if (!esValido) {
-      setLoginError("Correo o contraseña incorrectos.");
+    if (!email.includes("@") || password.length === 0) {
+      setLoginError("Ingresa tu correo y contraseña.");
       return;
     }
 
     setLoginError(null);
-    navigation.replace("Tabs");
+    setLoading(true);
+
+    try {
+      await login(email, password);
+      // replace() para que no se pueda volver a Login con el botón atrás
+      navigation.replace("Tabs");
+    } catch (err: any) {
+      // Supabase devuelve mensajes como "Invalid login credentials"
+      // o "Email not confirmed"
+      if (err?.message?.toLowerCase().includes("email not confirmed")) {
+        setLoginError("Debes confirmar tu correo antes de iniciar sesión.");
+      } else {
+        setLoginError("Correo o contraseña incorrectos.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -56,7 +73,11 @@ export default function Login({ navigation }: Props) {
 
       {loginError && <Text style={styles.loginErrorText}>{loginError}</Text>}
 
-      <CustomButton title="Iniciar Sesión" onPress={handleLogin} style={styles.mainButton} />
+      <CustomButton
+        title={loading ? "Ingresando..." : "Iniciar Sesión"}
+        onPress={handleLogin}
+        style={styles.mainButton}
+      />
       <CustomButton
         title="Crear cuenta"
         variant="tertiary"
@@ -70,11 +91,11 @@ export default function Login({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F4EFE6", // tono marfil/pergamino, evoca papel legal antiguo
+    backgroundColor: "#F4EFE6",
     alignItems: "center",
     justifyContent: "flex-start",
     paddingHorizontal: 28,
-    paddingTop: 60, // sube todo el contenido, como pediste
+    paddingTop: 60,
   },
   logo: {
     width: 150,
@@ -84,8 +105,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 34,
     fontWeight: "bold",
-    color: "#0B2545", // azul marino profundo, tipo toga/uniforme judicial
-    fontFamily: Platform.OS === "ios" ? "Georgia" : "serif", // tipografía con serifas, más solemne
+    color: "#0B2545",
+    fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
     letterSpacing: 1,
   },
   subtitle: {
@@ -99,7 +120,7 @@ const styles = StyleSheet.create({
   divider: {
     width: 60,
     height: 3,
-    backgroundColor: "#D9C9A3", // línea dorada decorativa, como un sello o listón
+    backgroundColor: "#D9C9A3",
     borderRadius: 2,
     marginBottom: 24,
   },
@@ -108,7 +129,7 @@ const styles = StyleSheet.create({
     borderColor: "#C9C2B4",
     borderWidth: 1.5,
     borderRadius: 14,
-    paddingVertical: 16, // inputs más altos/largos, como pediste
+    paddingVertical: 16,
     paddingHorizontal: 22,
     width: "100%",
     shadowColor: "#0B2545",

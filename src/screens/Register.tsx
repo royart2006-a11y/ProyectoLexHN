@@ -5,40 +5,52 @@ import { Image, Platform, StyleSheet, Text, View } from "react-native";
 import CategoryChip from "../components/CategoryChip";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
-import { TipoUsuario, useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import { RootStackParamList } from "../navigation/types";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Register">;
 
+// El rol ya no viene de un tipo propio del AuthContext viejo (TipoUsuario);
+// ahora es un string simple que se guarda como metadata en Supabase.
+type Rol = "usuario" | "abogado";
+
 export default function Register({ navigation }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [tipoUsuario, setTipoUsuario] = useState<TipoUsuario>("usuario");
+  const [rol, setRol] = useState<Rol>("usuario");
   const [registerError, setRegisterError] = useState<string | null>(null);
-  const { registrarUsuario } = useAuth();
+  const [pendingConfirmation, setPendingConfirmation] = useState(false); // true si falta confirmar correo
+  const [loading, setLoading] = useState(false);
+  const { register } = useAuth();
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!email.includes("@")) {
       setRegisterError("Ingresa un correo válido.");
       return;
     }
-    if (password.length < 4) {
+    if (password.length < 6) {
       setRegisterError("La contraseña debe tener al menos 4 caracteres.");
       return;
     }
 
-    const exito = registrarUsuario(email, password, tipoUsuario);
-
-    if (!exito) {
-      setRegisterError("Ese correo ya está registrado.");
-      return;
-    }
-
     setRegisterError(null);
-    navigation.reset({
-      index: 0,
-      routes: [{ name: "Tabs" }],
-    });
+    setLoading(true);
+
+  try {
+  const haySesion = await register(email, password, rol);
+console.log("rol:", rol, "| haySesion:", haySesion);
+
+  if (haySesion) {
+    navigation.reset({ index: 0, routes: [{ name: "Tabs" }] });
+  } else {
+    setPendingConfirmation(true); // falta confirmar el correo
+  }
+} catch (err: any) {
+      // Supabase lanza errores con un mensaje legible en err.message
+      setRegisterError(err.message ?? "No se pudo completar el registro.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -53,44 +65,65 @@ export default function Register({ navigation }: Props) {
 
       <View style={styles.divider} />
 
-      <CustomInput
-        onChangeText={setEmail}
-        value={email}
-        placeholder="Correo electrónico"
-        type="email"
-        containerStyle={styles.inputContainer}
-      />
-      <CustomInput
-        onChangeText={setPassword}
-        value={password}
-        placeholder="Contraseña"
-        type="password"
-        containerStyle={styles.inputContainer}
-      />
+      {pendingConfirmation ? (
+        // Estado especial: registro exitoso, pero requiere confirmar correo
+        <View style={styles.confirmationBox}>
+          <Text style={styles.confirmationTitle}>Revisa tu correo</Text>
+          <Text style={styles.confirmationText}>
+            Te enviamos un enlace de confirmación a {email}. Confírmalo y luego inicia sesión.
+          </Text>
+          <CustomButton
+            title="Volver al login"
+            onPress={() => navigation.navigate("Login")}
+            style={styles.mainButton}
+          />
+        </View>
+      ) : (
+        <>
+          <CustomInput
+            onChangeText={setEmail}
+            value={email}
+            placeholder="Correo electrónico"
+            type="email"
+            containerStyle={styles.inputContainer}
+          />
+          <CustomInput
+            onChangeText={setPassword}
+            value={password}
+            placeholder="Contraseña"
+            type="password"
+            containerStyle={styles.inputContainer}
+          />
 
-      <Text style={styles.roleLabel}>¿Cómo describirías tu perfil?</Text>
-      <View style={styles.roleRow}>
-        <CategoryChip
-          label="Usuario común"
-          selected={tipoUsuario === "usuario"}
-          onPress={() => setTipoUsuario("usuario")}
-        />
-        <CategoryChip
-          label="Persona de derecho"
-          selected={tipoUsuario === "abogado"}
-          onPress={() => setTipoUsuario("abogado")}
-        />
-      </View>
+          <Text style={styles.roleLabel}>¿Cómo describirías tu perfil?</Text>
+          <View style={styles.roleRow}>
+            <CategoryChip
+              label="Usuario común"
+              selected={rol === "usuario"}
+              onPress={() => setRol("usuario")}
+            />
+            <CategoryChip
+              label="Persona de derecho"
+              selected={rol === "abogado"}
+              onPress={() => setRol("abogado")}
+            />
+          </View>
 
-      {registerError && <Text style={styles.errorText}>{registerError}</Text>}
+          {registerError && <Text style={styles.errorText}>{registerError}</Text>}
 
-      <CustomButton title="Registrarse" onPress={handleRegister} style={styles.mainButton} />
-      <CustomButton
-        title="Volver al login"
-        variant="tertiary"
-        onPress={() => navigation.navigate("Login")}
-        style={styles.tertiaryButton}
-      />
+          <CustomButton
+            title={loading ? "Registrando..." : "Registrarse"}
+            onPress={handleRegister}
+            style={styles.mainButton}
+          />
+          <CustomButton
+            title="Volver al login"
+            variant="tertiary"
+            onPress={() => navigation.navigate("Login")}
+            style={styles.tertiaryButton}
+          />
+        </>
+      )}
     </View>
   );
 }
@@ -104,11 +137,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
     paddingTop: 50,
   },
-  logo: {
-    width: 110,
-    height: 110,
-    marginBottom: 6,
-  },
+  logo: { width: 110, height: 110, marginBottom: 6 },
   title: {
     fontSize: 28,
     fontWeight: "bold",
@@ -124,13 +153,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontStyle: "italic",
   },
-  divider: {
-    width: 60,
-    height: 3,
-    backgroundColor: "#D9C9A3",
-    borderRadius: 2,
-    marginBottom: 20,
-  },
+  divider: { width: 60, height: 3, backgroundColor: "#D9C9A3", borderRadius: 2, marginBottom: 20 },
   inputContainer: {
     backgroundColor: "#FFFFFF",
     borderColor: "#C9C2B4",
@@ -145,32 +168,12 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 1,
   },
-  roleLabel: {
-    fontSize: 13,
-    color: "#5C6B7A",
-    alignSelf: "flex-start",
-    marginTop: 8,
-    marginBottom: 10,
-  },
-  roleRow: {
-    flexDirection: "row",
-    marginBottom: 16,
-    alignSelf: "flex-start",
-  },
-  errorText: {
-    color: "#B03A2E",
-    fontSize: 13,
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  mainButton: {
-    width: "100%",
-    paddingVertical: 16,
-    borderRadius: 12,
-    marginTop: 6,
-  },
-  tertiaryButton: {
-    width: "100%",
-    marginTop: 4,
-  },
+  roleLabel: { fontSize: 13, color: "#5C6B7A", alignSelf: "flex-start", marginTop: 8, marginBottom: 10 },
+  roleRow: { flexDirection: "row", marginBottom: 16, alignSelf: "flex-start" },
+  errorText: { color: "#B03A2E", fontSize: 13, marginBottom: 10, textAlign: "center" },
+  mainButton: { width: "100%", paddingVertical: 16, borderRadius: 12, marginTop: 6 },
+  tertiaryButton: { width: "100%", marginTop: 4 },
+  confirmationBox: { width: "100%", alignItems: "center" },
+  confirmationTitle: { fontSize: 18, fontWeight: "bold", color: "#0B2545", marginBottom: 8 },
+  confirmationText: { fontSize: 13, color: "#5C6B7A", textAlign: "center", marginBottom: 20 },
 });
