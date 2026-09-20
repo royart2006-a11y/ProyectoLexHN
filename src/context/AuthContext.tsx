@@ -1,60 +1,91 @@
-import React, { createContext, ReactNode, useContext, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import type { Session } from "@supabase/supabase-js";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
-export type TipoUsuario = "abogado" | "usuario";
-
-type Usuario = {
+type User = {
   email: string;
-  password: string;
-  tipoUsuario: TipoUsuario;
-};
+  authToken?: string;
+  sessionToken?: string;
+  role?: string;
+} | null;
 
 type AuthContextType = {
-  usuarioActual: Usuario | null;   // null = nadie ha iniciado sesión
-  registrarUsuario: (email: string, password: string, tipoUsuario: TipoUsuario) => boolean;
-  validarLogin: (email: string, password: string) => boolean;
-  cerrarSesion: () => void;
+  user: User;
+  loading: boolean;
+  register: (email: string, pwd: string, role: string) => Promise<boolean>; // true = ya hay sesión
+  login: (email: string, pwd: string) => Promise<void>;
+  logout: () => Promise<void>;
 };
 
-// createContext empieza en 'undefined' porque, fuera del Provider, no hay contexto válido.
-// Esto nos permite detectar el error "usaste useAuth() sin envolver con AuthProvider".
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [usuarios, setUsuarios] = useState<Usuario[]>([]);       // "base de datos" en memoria
-  const [usuarioActual, setUsuarioActual] = useState<Usuario | null>(null); // sesión activa
+// Un solo lugar que convierte una sesión de Supabase en nuestro User,
+// incluyendo el rol guardado como metadata en el registro.
+const mapUser = (session: Session): User => ({
+  email: session.user.email ?? "",
+  authToken: session.access_token,
+  sessionToken: session.refresh_token,
+  role: session.user.user_metadata?.role,
+});
 
-  const registrarUsuario = (email: string, password: string, tipoUsuario: TipoUsuario): boolean => {
-    const yaExiste = usuarios.some((u) => u.email === email);
-    if (yaExiste) return false; // avisamos al que llamó que falló, sin lanzar excepción
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<User>(null);
+  const [loading, setLoading] = useState(true);
 
-    const nuevoUsuario = { email, password, tipoUsuario };
-    setUsuarios((prev) => [...prev, nuevoUsuario]); // agregamos sin mutar el array anterior
-    setUsuarioActual(nuevoUsuario); // login automático tras registrarse
-    return true;
+  useEffect(() => {
+    const cargarSesion = async () => {
+      const { data } = await supabase.auth.getSession();
+      setUser(data.session ? mapUser(data.session) : null);
+      setLoading(false);
+    };
+
+    cargarSesion();
+
+    // Se dispara en login, logout, refresco de token, etc.
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session ? mapUser(session) : null);
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const register = async (email: string, pwd: string, role: string) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: pwd,
+      options: { data: { role } }, // se guarda en user_metadata
+    });
+    if (error) throw error;
+    console.log("session:", !!data.session, "| identities:", data.user?.identities?.length);
+
+    // Hay sesión solo si la confirmación de correo está desactivada.
+    // Si hay sesión, onAuthStateChange ya actualiza el user.
+    return !!data.session;
   };
 
-  const validarLogin = (email: string, password: string): boolean => {
-    // Busca un usuario cuyo email Y password coincidan EXACTAMENTE
-    const encontrado = usuarios.find((u) => u.email === email && u.password === password);
-    if (!encontrado) return false;
-
-    setUsuarioActual(encontrado);
-    return true;
+  const login = async (email: string, pwd: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password: pwd });
+    if (error) throw error;
+    // onAuthStateChange se encarga de llenar el user (con el rol)
   };
 
-  const cerrarSesion = () => setUsuarioActual(null);
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+    setUser(null);
+  };
 
   return (
-    <AuthContext.Provider value={{ usuarioActual, registrarUsuario, validarLogin, cerrarSesion }}>
+    <AuthContext.Provider value={{ user, loading, register, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-// Hook personalizado: evita que cada pantalla tenga que escribir useContext(AuthContext)
-// y el chequeo de undefined manualmente. Centraliza el mensaje de error también.
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth debe usarse dentro de un AuthProvider");
+  if (!context) throw new Error("useAuth debe ser utilizado dentro de AuthProvider");
   return context;
-}
+};
