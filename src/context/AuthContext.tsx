@@ -3,6 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 type User = {
+  id: string; // nuevo: UUID de Supabase, necesario para relacionar con la tabla favoritos
   email: string;
   authToken?: string;
   sessionToken?: string;
@@ -22,6 +23,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 // Un solo lugar que convierte una sesión de Supabase en nuestro User,
 // incluyendo el rol guardado como metadata en el registro.
 const mapUser = (session: Session): User => ({
+  id: session.user.id,
   email: session.user.email ?? "",
   authToken: session.access_token,
   sessionToken: session.refresh_token,
