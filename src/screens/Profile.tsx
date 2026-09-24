@@ -1,7 +1,7 @@
 // src/screens/Profile.tsx
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Image, Platform, StyleSheet, Text, View } from "react-native";
 import CustomButton from "../components/CustomButton";
 
