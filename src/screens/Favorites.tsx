@@ -1,7 +1,6 @@
 // src/screens/Favorites.tsx
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import React from "react";
 import { FlatList, Platform, StyleSheet, Text, View } from "react-native";
 import ArticleCard from "../components/ArticleCard";
 
