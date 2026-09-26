@@ -1,12 +1,16 @@
 export type RootStackParamList = {
-  Login: undefined;               // Login no recibe parámetros
+  Login: undefined;
   Register: undefined;
   Tabs: undefined;
-  ArticleDetail: { articleId: string }; // ArticleDetail SÍ necesita saber qué artículo mostrar
+  EssentialCodes: undefined;
+  FullCodes: undefined;
+  PdfViewer: { codigoId: string; codigoNombre: string }; // nuevo
+  Search: { codigoId: string; codigoNombre: string };
+  ArticleDetail: { articleId: string };
 };
 
 export type TabsParamList = {
-  Search: undefined;
+  Home: undefined; // antes era "Search"
   Favorites: undefined;
   Profile: undefined;
 };
