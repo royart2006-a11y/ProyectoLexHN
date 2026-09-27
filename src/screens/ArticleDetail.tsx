@@ -1,10 +1,10 @@
-// src/screens/ArticleDetail.tsx
 import { Ionicons } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React from "react";
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAuth } from "../context/AuthContext";
 import { useFavorites } from "../context/FavoritesContext";
+import { useTheme } from "../context/ThemeContext";
+
 import { ARTICULOS } from "../data/articulos";
 import { RootStackParamList } from "../navigation/types";
 
@@ -14,13 +14,14 @@ export default function ArticleDetail({ route }: Props) {
   const { articleId } = route.params;
   const { esFavorito, toggleFavorito } = useFavorites();
   const { user } = useAuth();
+  const { colors } = useTheme();
 
   const articulo = ARTICULOS.find((item) => item.id === articleId);
 
   if (!articulo) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.notFound}>Artículo no encontrado.</Text>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Text style={[styles.notFound, { color: colors.textSecondary }]}>Artículo no encontrado.</Text>
       </View>
     );
   }
@@ -29,38 +30,34 @@ export default function ArticleDetail({ route }: Props) {
   const esAbogado = user?.role === "abogado";
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        <Text style={styles.articuloTitle}>{articulo.articulo}</Text>
+        <Text style={[styles.articuloTitle, { color: colors.primary, fontFamily: Platform.OS === "ios" ? "Georgia" : "serif" }]}>{articulo.articulo}</Text>
         <TouchableOpacity onPress={() => toggleFavorito(articulo.id)}>
-          <Ionicons name={marcado ? "heart" : "heart-outline"} size={26} color={marcado ? "#8B2E2E" : "#5C6B7A"} />
+          <Ionicons name={marcado ? "heart" : "heart-outline"} size={26} color={marcado ? "#8B2E2E" : colors.textSecondary} />
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.leyBadge}>{articulo.ley}</Text>
-      <Text style={styles.categoriaLabel}>Categoría: {articulo.categoria}</Text>
+      <Text style={[styles.leyBadge, { backgroundColor: colors.accent, color: colors.primary }]}>{articulo.ley}</Text>
+      <Text style={[styles.categoriaLabel, { color: colors.textSecondary }]}>Categoría: {articulo.categoria}</Text>
 
-      <View style={[styles.modeBadge, esAbogado ? styles.modeBadgeAbogado : styles.modeBadgeUsuario]}>
-        <Ionicons name={esAbogado ? "briefcase-outline" : "person-outline"} size={14} color="#0B2545" />
-        <Text style={styles.modeBadgeText}>
-          {esAbogado ? "Vista técnica / legal" : "Vista para usuario general"}
-        </Text>
+      <View style={[styles.modeBadge, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <Ionicons name={esAbogado ? "briefcase-outline" : "person-outline"} size={14} color={colors.primary} />
+        <Text style={[styles.modeBadgeText, { color: colors.primary }]}>{esAbogado ? "Vista técnica / legal" : "Vista para usuario general"}</Text>
       </View>
 
       {esAbogado ? (
         <>
-          <Text style={styles.sectionTitle}>Texto íntegro del artículo</Text>
-          <Text style={styles.resumenCompleto}>{articulo.resumenCompleto}</Text>
+          <Text style={[styles.sectionTitle, { color: colors.primary }]}>Texto íntegro del artículo</Text>
+          <Text style={[styles.resumenCompleto, { color: colors.text }]}>{articulo.resumenCompleto}</Text>
         </>
       ) : (
         <>
-          <Text style={styles.sectionTitle}>En términos simples</Text>
-          <Text style={styles.resumenCompleto}>{articulo.resumen}</Text>
-
-          <View style={styles.divider} />
-
-          <Text style={styles.sectionTitle}>Texto oficial del artículo</Text>
-          <Text style={styles.resumenCompleto}>{articulo.resumenCompleto}</Text>
+          <Text style={[styles.sectionTitle, { color: colors.primary }]}>En términos simples</Text>
+          <Text style={[styles.resumenCompleto, { color: colors.text }]}>{articulo.resumen}</Text>
+          <View style={[styles.divider, { backgroundColor: colors.accent }]} />
+          <Text style={[styles.sectionTitle, { color: colors.primary }]}>Texto oficial del artículo</Text>
+          <Text style={[styles.resumenCompleto, { color: colors.text }]}>{articulo.resumenCompleto}</Text>
         </>
       )}
     </ScrollView>
@@ -68,43 +65,15 @@ export default function ArticleDetail({ route }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F4EFE6", padding: 22 },
+  container: { flex: 1, padding: 22 },
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 },
-  articuloTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#0B2545",
-    fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
-  },
-  leyBadge: {
-    fontSize: 12,
-    color: "#0B2545",
-    backgroundColor: "#EFE6D3",
-    alignSelf: "flex-start",
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-    marginBottom: 6,
-    fontWeight: "600",
-  },
-  categoriaLabel: { fontSize: 13, color: "#5C6B7A", marginBottom: 12, fontStyle: "italic" },
-  modeBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "flex-start",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
-    marginBottom: 16,
-    backgroundColor: "#FFFFFF",
-    borderWidth: 1,
-    borderColor: "#C9C2B4",
-  },
-  modeBadgeUsuario: {},
-  modeBadgeAbogado: {},
-  modeBadgeText: { fontSize: 12, color: "#0B2545", marginLeft: 5, fontWeight: "bold" },
-  sectionTitle: { fontSize: 16, fontWeight: "bold", color: "#0B2545", marginBottom: 8 },
-  resumenCompleto: { fontSize: 15, lineHeight: 23, color: "#3E4C59" },
-  divider: { height: 1, backgroundColor: "#D9C9A3", marginVertical: 22 },
-  notFound: { fontSize: 16, color: "#5C6B7A", textAlign: "center", marginTop: 40 },
+  articuloTitle: { fontSize: 24, fontWeight: "bold" },
+  leyBadge: { fontSize: 12, alignSelf: "flex-start", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginBottom: 6, fontWeight: "600" },
+  categoriaLabel: { fontSize: 13, marginBottom: 12, fontStyle: "italic" },
+  modeBadge: { flexDirection: "row", alignItems: "center", alignSelf: "flex-start", paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8, marginBottom: 16, borderWidth: 1 },
+  modeBadgeText: { fontSize: 12, marginLeft: 5, fontWeight: "bold" },
+  sectionTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 8 },
+  resumenCompleto: { fontSize: 15, lineHeight: 23 },
+  divider: { height: 1, marginVertical: 22 },
+  notFound: { fontSize: 16, textAlign: "center", marginTop: 40 },
 });

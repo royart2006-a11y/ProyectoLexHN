@@ -1,29 +1,31 @@
-// src/screens/EssentialCodes.tsx
 import { Ionicons } from "@expo/vector-icons";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 import { CODIGOS } from "../data/codigos";
 import { RootStackParamList } from "../navigation/types";
 
 type Props = NativeStackScreenProps<RootStackParamList, "EssentialCodes">;
 
 export default function EssentialCodes({ navigation }: Props) {
+  const { colors } = useTheme();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <FlatList
         data={CODIGOS}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={styles.card}
+            style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
             onPress={() => navigation.navigate("Search", { codigoId: item.id, codigoNombre: item.nombre })}
           >
             <View style={styles.cardHeader}>
-              <Text style={styles.cardTitle}>{item.nombre}</Text>
-              <Ionicons name="chevron-forward" size={20} color="#5C6B7A" />
+              <Text style={[styles.cardTitle, { color: colors.primary }]}>{item.nombre}</Text>
+              <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
             </View>
-            <Text style={styles.cardArea}>{item.area}</Text>
-            <Text style={styles.cardDesc}>{item.descripcion}</Text>
+            <Text style={[styles.cardArea, { color: colors.primary }]}>{item.area}</Text>
+            <Text style={[styles.cardDesc, { color: colors.textSecondary }]}>{item.descripcion}</Text>
           </TouchableOpacity>
         )}
       />
@@ -32,13 +34,10 @@ export default function EssentialCodes({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#F4EFE6", padding: 16 },
-  card: {
-    backgroundColor: "#FFFFFF", borderColor: "#C9C2B4", borderWidth: 1.5,
-    borderRadius: 12, padding: 16, marginBottom: 12,
-  },
+  container: { flex: 1, padding: 16 },
+  card: { borderWidth: 1.5, borderRadius: 12, padding: 16, marginBottom: 12 },
   cardHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  cardTitle: { fontSize: 16, fontWeight: "bold", color: "#0B2545" },
-  cardArea: { fontSize: 12, color: "#0B2545", fontWeight: "600", marginTop: 2 },
-  cardDesc: { fontSize: 13, color: "#5C6B7A", marginTop: 6 },
+  cardTitle: { fontSize: 16, fontWeight: "bold" },
+  cardArea: { fontSize: 12, fontWeight: "600", marginTop: 2 },
+  cardDesc: { fontSize: 13, marginTop: 6 },
 });

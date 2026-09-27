@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ArticleDetail from "../screens/ArticleDetail";
 import EssentialCodes from "../screens/EssentialCodes";
 import FullCodes from "../screens/FullCodes";
+import Glossary from "../screens/Glossary";
 import Login from "../screens/Login";
 import PdfViewer from "../screens/PdfViewer";
 import Register from "../screens/Register";
@@ -22,6 +23,7 @@ export default function StackNavigator() {
       <Stack.Screen name="Search" component={Search} options={{ title: "Buscar" }} />
       <Stack.Screen name="ArticleDetail" component={ArticleDetail} options={{ title: "Detalle del artículo" }} />
       <Stack.Screen name="PdfViewer" component={PdfViewer} options={({ route }) => ({ title: route.params.codigoNombre })} />
+      <Stack.Screen name="Glossary" component={Glossary} options={{ title: "Glosario legal" }} />
     </Stack.Navigator>
   );
 }
