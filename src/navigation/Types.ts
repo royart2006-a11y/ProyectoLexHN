@@ -4,6 +4,7 @@ export type RootStackParamList = {
   Tabs: undefined;
   EssentialCodes: undefined;
   FullCodes: undefined;
+  Glossary: undefined; // nuevo
   PdfViewer: { codigoId: string; codigoNombre: string }; // nuevo
   Search: { codigoId: string; codigoNombre: string };
   ArticleDetail: { articleId: string };
