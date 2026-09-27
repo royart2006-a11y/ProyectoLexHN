@@ -10,6 +10,13 @@ export type Codigo = {
 
 export const CODIGOS: Codigo[] = [
   {
+    id: "constitucion",
+    nombre: "Constitución de la República",
+    area: "Derecho constitucional",
+    descripcion: "Derechos fundamentales, organización del Estado y garantías constitucionales.",
+    pdfAsset: require("../../assets/pdfs/constitucion.pdf"),
+  },
+  {
     id: "civil",
     nombre: "Código Civil",
     area: "Derecho civil",
@@ -51,4 +58,5 @@ export const CODIGOS: Codigo[] = [
     descripcion: "Impuestos, obligaciones fiscales y procedimientos tributarios.",
     pdfAsset: require("../../assets/pdfs/codigo-tributario.pdf"),
   },
+  
 ];

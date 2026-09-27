@@ -1,0 +1,61 @@
+// src/data/glosario.ts
+
+export type TerminoGlosario = {
+  id: string;
+  termino: string;
+  significado: string;
+  area: string; // a qué código/rama pertenece principalmente, útil para filtrar más adelante
+};
+
+export const GLOSARIO: TerminoGlosario[] = [
+  { id: "1", termino: "Obligado tributario", significado: "Persona que tiene obligaciones establecidas por la normativa tributaria.", area: "Tributario" },
+  { id: "2", termino: "Sujeto pasivo", significado: "Persona obligada al cumplimiento de una obligación tributaria.", area: "Tributario" },
+  { id: "3", termino: "Tributo", significado: "Prestación económica exigida legalmente por el Estado.", area: "Tributario" },
+  { id: "4", termino: "Fiscalización", significado: "Actividad de comprobación y control del cumplimiento de obligaciones tributarias.", area: "Tributario" },
+  { id: "5", termino: "Administración Tributaria", significado: "Autoridad encargada de aplicar y administrar las normas tributarias.", area: "Tributario" },
+  { id: "6", termino: "Administración Aduanera", significado: "Autoridad encargada de las funciones relacionadas con materia aduanera.", area: "Tributario" },
+  { id: "7", termino: "Infracción tributaria", significado: "Incumplimiento de una obligación establecida en materia tributaria.", area: "Tributario" },
+  { id: "8", termino: "Delito tributario", significado: "Conducta ilícita relacionada con el incumplimiento grave de normas tributarias.", area: "Tributario" },
+  { id: "9", termino: "Gravamen", significado: "Carga u obligación económica impuesta legalmente.", area: "Tributario" },
+  { id: "10", termino: "Declaración tributaria", significado: "Información que el obligado presenta ante la autoridad tributaria.", area: "Tributario" },
+  { id: "11", termino: "Patria potestad", significado: "Conjunto de derechos y deberes de los padres respecto de sus hijos.", area: "Familia" },
+  { id: "12", termino: "Filiación", significado: "Relación jurídica entre padres e hijos.", area: "Familia" },
+  { id: "13", termino: "Adopción", significado: "Institución jurídica mediante la cual se establece una relación legal de filiación.", area: "Familia" },
+  { id: "14", termino: "Tutela", significado: "Protección y representación legal de una persona que requiere dicha protección.", area: "Familia" },
+  { id: "15", termino: "Paternidad", significado: "Relación jurídica que vincula a un padre con su hijo.", area: "Familia" },
+  { id: "16", termino: "Maternidad", significado: "Relación jurídica que vincula a una madre con su hijo.", area: "Familia" },
+  { id: "17", termino: "Unión de hecho", significado: "Relación de convivencia reconocida jurídicamente bajo determinadas condiciones.", area: "Familia" },
+  { id: "18", termino: "Patrimonio familiar", significado: "Conjunto de bienes destinado a la protección económica de la familia.", area: "Familia" },
+  { id: "19", termino: "Pensión alimenticia", significado: "Prestación destinada a cubrir necesidades básicas de quien tiene derecho a alimentos.", area: "Familia" },
+  { id: "20", termino: "Emancipación", significado: "Situación jurídica mediante la cual una persona adquiere determinada independencia respecto de la autoridad parental.", area: "Familia" },
+  { id: "21", termino: "Menor de edad", significado: "Persona que no ha alcanzado la mayoría de edad legal.", area: "Niñez" },
+  { id: "22", termino: "Protección integral", significado: "Conjunto de medidas destinadas a garantizar los derechos y bienestar de niños y adolescentes.", area: "Niñez" },
+  { id: "23", termino: "Seguridad social", significado: "Sistema de protección frente a determinadas necesidades y contingencias sociales.", area: "Niñez" },
+  { id: "24", termino: "Rehabilitación", significado: "Proceso dirigido a recuperar o desarrollar determinadas capacidades o condiciones.", area: "Niñez" },
+  { id: "25", termino: "Vulnerabilidad", significado: "Situación que coloca a una persona o grupo en condiciones especiales de riesgo o desprotección.", area: "Niñez" },
+  { id: "26", termino: "Contrato de trabajo", significado: "Acuerdo jurídico mediante el cual se establecen relaciones laborales entre trabajador y patrono.", area: "Laboral" },
+  { id: "27", termino: "Patrono", significado: "Persona que emplea trabajadores bajo una relación laboral.", area: "Laboral" },
+  { id: "28", termino: "Trabajador", significado: "Persona que presta servicios bajo una relación de trabajo.", area: "Laboral" },
+  { id: "29", termino: "Salario", significado: "Remuneración que recibe el trabajador por sus servicios.", area: "Laboral" },
+  { id: "30", termino: "Jornada laboral", significado: "Tiempo durante el cual el trabajador presta sus servicios.", area: "Laboral" },
+  { id: "31", termino: "Prestaciones laborales", significado: "Derechos económicos o beneficios derivados de la relación de trabajo.", area: "Laboral" },
+  { id: "32", termino: "Despido", significado: "Terminación de la relación laboral por decisión del patrono.", area: "Laboral" },
+  { id: "33", termino: "Desahucio", significado: "Terminación de una relación laboral mediante el mecanismo previsto legalmente.", area: "Laboral" },
+  { id: "34", termino: "Sindicato", significado: "Organización constituida para la defensa de intereses laborales.", area: "Laboral" },
+  { id: "35", termino: "Comerciante", significado: "Persona que realiza actividades consideradas legalmente como actos de comercio.", area: "Mercantil" },
+  { id: "36", termino: "Acto de comercio", significado: "Acto o actividad que la legislación reconoce como mercantil.", area: "Mercantil" },
+  { id: "37", termino: "Sociedad mercantil", significado: "Organización constituida para desarrollar actividades comerciales conforme a la ley.", area: "Mercantil" },
+  { id: "38", termino: "Sociedad anónima", significado: "Forma de sociedad mercantil cuyo capital está representado por acciones.", area: "Mercantil" },
+  { id: "39", termino: "Accionista", significado: "Persona que posee acciones de una sociedad.", area: "Mercantil" },
+  { id: "40", termino: "Asamblea de accionistas", significado: "Reunión de los accionistas para tratar y decidir asuntos de la sociedad.", area: "Mercantil" },
+  { id: "41", termino: "Administrador", significado: "Persona encargada de administrar o representar una sociedad.", area: "Mercantil" },
+  { id: "42", termino: "Título valor", significado: "Documento que incorpora un derecho susceptible de ejercicio conforme a las reglas legales aplicables.", area: "Mercantil" },
+  { id: "43", termino: "Obligación mercantil", significado: "Deber jurídico derivado de una relación comercial.", area: "Mercantil" },
+  { id: "44", termino: "Quiebra", significado: "Situación jurídica relacionada con la imposibilidad de cumplir determinadas obligaciones comerciales.", area: "Mercantil" },
+  { id: "45", termino: "Constitución", significado: "Norma fundamental que establece derechos, garantías y organización del Estado.", area: "Constitucional" },
+  { id: "46", termino: "Hábeas data", significado: "Garantía relacionada con el acceso y protección de información personal.", area: "Constitucional" },
+  { id: "47", termino: "Amparo", significado: "Garantía destinada a proteger derechos constitucionales frente a determinadas vulneraciones.", area: "Constitucional" },
+  { id: "48", termino: "Derechos fundamentales", significado: "Derechos esenciales reconocidos y protegidos jurídicamente.", area: "Constitucional" },
+  { id: "49", termino: "Jurisdicción", significado: "Potestad de los órganos competentes para conocer y resolver asuntos jurídicos.", area: "Constitucional" },
+  { id: "50", termino: "Servidor público", significado: "Persona que desempeña funciones dentro de la administración pública.", area: "Constitucional" },
+];
