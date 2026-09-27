@@ -1,36 +1,61 @@
-import React from "react";
-import { StyleProp, StyleSheet, Text, TouchableOpacity, ViewStyle } from "react-native";
+import { ActivityIndicator, StyleProp, StyleSheet, Text, TouchableOpacity, ViewStyle } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 type CustomButtonProps = {
   title: string;
   onPress: () => void;
   variant?: "primary" | "secondary" | "tertiary";
-  style?: StyleProp<ViewStyle>; // permite ajustar tamaño/posición sin tocar el estilo base
+  loading?: boolean;
+  disabled?: boolean;
+  style?: StyleProp<ViewStyle>;
 };
 
-export default function CustomButton({ title, onPress, variant = "primary", style }: CustomButtonProps) {
-  const styles = getStyles(variant);
+export default function CustomButton({
+  title,
+  onPress,
+  variant = "primary",
+  loading = false,
+  disabled = false,
+  style,
+}: CustomButtonProps) {
+  const { colors } = useTheme();
+  const estaInactivo = disabled || loading;
+
+  const backgroundColor =
+    variant === "primary" ? colors.primary : variant === "secondary" ? colors.card : "transparent";
+  const borderColor = variant === "secondary" ? colors.primary : "transparent";
+  const textColor = variant === "primary" ? colors.background : colors.primary;
 
   return (
-    <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
-      <Text style={styles.buttonTitle}>{title}</Text>
+    <TouchableOpacity
+      style={[
+        styles.button,
+        { backgroundColor, borderColor, borderWidth: variant === "secondary" ? 1.5 : 0 },
+        estaInactivo && styles.buttonDisabled,
+        style,
+      ]}
+      onPress={onPress}
+      disabled={estaInactivo}
+    >
+      {loading ? (
+        <ActivityIndicator color={textColor} />
+      ) : (
+        <Text style={[styles.buttonTitle, { color: textColor }]}>{title}</Text>
+      )}
     </TouchableOpacity>
   );
 }
 
-const getStyles = (variant: "primary" | "secondary" | "tertiary") =>
-  StyleSheet.create({
-    button: {
-      backgroundColor:
-        variant === "primary" ? "#0B2545" : variant === "secondary" ? "#D9C9A3" : "transparent",
-      borderRadius: 6,
-      width: 150,
-      padding: 12,
-      marginBottom: 5,
-      alignItems: "center",
-    },
-    buttonTitle: {
-      color: variant === "primary" ? "#F4EFE6" : variant === "secondary" ? "#0B2545" : "#0B2545",
-      fontWeight: variant === "tertiary" ? "600" : "bold",
-    },
-  });
+const styles = StyleSheet.create({
+  button: {
+    borderRadius: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    width: 150,
+    marginBottom: 5,
+  },
+  buttonDisabled: { opacity: 0.5 },
+  buttonTitle: { fontWeight: "bold", fontSize: 15 },
+});

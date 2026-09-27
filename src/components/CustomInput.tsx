@@ -1,22 +1,18 @@
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import { useState } from "react";
 import { KeyboardTypeOptions, StyleProp, StyleSheet, Text, TextInput, TouchableOpacity, View, ViewStyle } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 type CustomInputProps = {
   onChangeText: (text: string) => void;
   value: string;
   placeholder: string;
   type?: "default" | "password" | "email" | "number";
-  containerStyle?: StyleProp<ViewStyle>; // permite personalizar el look en pantallas específicas, sin afectar el resto
+  containerStyle?: StyleProp<ViewStyle>;
 };
 
-export default function CustomInput({
-  onChangeText,
-  value,
-  placeholder,
-  type = "default",
-  containerStyle,
-}: CustomInputProps) {
+export default function CustomInput({ onChangeText, value, placeholder, type = "default", containerStyle }: CustomInputProps) {
+  const { colors } = useTheme();
   const [isSecureText, setIsSecureText] = useState(type === "password");
   const isPasswordField = type === "password";
 
@@ -37,21 +33,28 @@ export default function CustomInput({
 
   return (
     <View style={styles.wrapper}>
-      <View style={[styles.inputContainer, containerStyle, error && styles.inputError]}>
-        {iconName && <MaterialIcons name={iconName as any} size={22} color="#5C6B7A" />}
+      <View
+        style={[
+          styles.inputContainer,
+          { backgroundColor: colors.card, borderColor: colors.border },
+          containerStyle,
+          error && styles.inputError,
+        ]}
+      >
+        {iconName && <MaterialIcons name={iconName as any} size={22} color={colors.textSecondary} />}
         <TextInput
-          style={styles.input}
+          style={[styles.input, { color: colors.text }]}
           onChangeText={onChangeText}
           value={value}
           placeholder={placeholder}
-          placeholderTextColor="#8A97A5"
+          placeholderTextColor={colors.textSecondary}
           keyboardType={keyboardType}
           secureTextEntry={isSecureText}
           autoCapitalize={type === "email" ? "none" : "sentences"}
         />
         {isPasswordField && (
           <TouchableOpacity onPress={() => setIsSecureText(!isSecureText)}>
-            <Ionicons name={isSecureText ? "eye" : "eye-off"} size={22} color="#5C6B7A" />
+            <Ionicons name={isSecureText ? "eye" : "eye-off"} size={22} color={colors.textSecondary} />
           </TouchableOpacity>
         )}
       </View>
@@ -63,12 +66,10 @@ export default function CustomInput({
 const styles = StyleSheet.create({
   wrapper: { marginBottom: 10 },
   inputContainer: {
-    backgroundColor: "lightgray",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     borderRadius: 9,
-    borderColor: "gray",
     borderWidth: 1,
     paddingLeft: 20,
     paddingRight: 20,
