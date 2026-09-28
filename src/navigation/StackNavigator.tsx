@@ -1,3 +1,4 @@
+import { useTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ArticleDetail from "../screens/ArticleDetail";
 import EssentialCodes from "../screens/EssentialCodes";
@@ -10,11 +11,20 @@ import Search from "../screens/Search";
 import TabNavigator from "./TabNavigator";
 import { RootStackParamList } from "./types";
 
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function StackNavigator() {
+  const { colors } = useTheme();
   return (
-    <Stack.Navigator screenOptions={{ headerShown: true }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerStyle: { backgroundColor: colors.card },
+        headerTintColor: colors.text,
+        contentStyle: { backgroundColor: colors.background },
+      }}
+    >
       <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
       <Stack.Screen name="Register" component={Register} options={{ title: "Crear cuenta" }} />
       <Stack.Screen name="Tabs" component={TabNavigator} options={{ headerShown: false, gestureEnabled: false }} />
