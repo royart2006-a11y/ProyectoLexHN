@@ -17,23 +17,24 @@ export default function Login({ navigation }: Props) {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 
-  const handleLogin = async () => {
+   const handleLogin = async () => {
     if (loading) return;
     if (!email.includes("@") || password.length === 0) {
       setLoginError("Ingresa tu correo y contraseña.");
       return;
     }
-  
+
     setLoginError(null);
     setLoading(true);
     try {
       await login(email, password);
       navigation.replace("Tabs");
     } catch (err: any) {
-  setLoginError("Correo o contraseña incorrectos.");
-}
-  }
-
+      setLoginError("Correo o contraseña incorrectos.");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Image source={require("../../assets/images/temis.png")} style={styles.logo} resizeMode="contain" />
